@@ -1,17 +1,943 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/assets/moses-avatar.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MOMOLILI TECH — Build Without Limits</title>
-    <meta name="description" content="MOMOLILI TECH personal website: full-stack systems, animated interfaces, and production-grade web applications." />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MOMOLILI TECH — Build Without Limits</title>
+<link rel="icon" href="assets/avatar.jpg">
+<meta name="description" content="MOMOLILI TECH personal website: full-stack systems, animated interfaces, and production-grade web applications.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+html{overflow-x:clip}
+body{margin:0;background:#f4f5f1}
+.page{
+  --bg:#f4f5f1; --paper:#ffffff; --ink:#101211; --muted:#5d6661; --line:#d8ded7;
+  --blue:#3157d8; --ember:#c76f2a; --bright:#38d39f; --dark:#0e1110;
+  --ease:cubic-bezier(.22,1,.36,1); --pop:cubic-bezier(.34,1.56,.64,1);
+  --display:'Space Grotesk',system-ui,sans-serif; --body:'Inter',system-ui,sans-serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+  position:relative; background:var(--bg); color:var(--ink); font-family:var(--body); -webkit-font-smoothing:antialiased;
+}
+.page *{box-sizing:border-box}
+sc-for,sc-if{display:contents}
+.page a{color:inherit;text-decoration:none}
+.page h1,.page h2,.page h3,.page p{margin:0}
+.wrap{width:min(100% - 64px,1280px);margin:0 auto;position:relative}
+.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.eyebrow b{color:var(--signal);font-weight:600}
+.lede{font-size:18px;line-height:1.65;color:var(--muted);max-width:56ch}
+
+/* keyframes (no double braces anywhere) */
+@keyframes rise{
+  from{transform:translateY(112%)}
+  to{transform:none}
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(26px);filter:blur(6px)}
+  to{opacity:1;transform:none;filter:none}
+}
+@keyframes pop{
+  from{opacity:0;transform:scale(.3) rotate(-24deg)}
+  to{opacity:1;transform:none}
+}
+@keyframes bob{
+  from{transform:translateY(-7px) rotate(-1.6deg)}
+  to{transform:translateY(8px) rotate(1.6deg)}
+}
+@keyframes draw{
+  from{stroke-dashoffset:1}
+  to{stroke-dashoffset:0}
+}
+@keyframes drift{
+  from{transform:translateX(-4%)}
+  to{transform:translateX(4%)}
+}
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
+@keyframes slot{
+  0%{clip-path:inset(100% 0 0 0)}
+  4%,30%{clip-path:inset(0 0 0 0)}
+  34%,100%{clip-path:inset(0 0 100% 0)}
+}
+@keyframes blink{
+  50%{opacity:0}
+}
+@keyframes press{
+  0%,86%,100%{transform:none;background:#f3ecdc}
+  90%{transform:translateY(2px);background:var(--bright)}
+}
+@keyframes marquee{
+  to{transform:translateX(-50%)}
+}
+@keyframes sweep{
+  from{transform:translateX(-120%)}
+  to{transform:translateX(220%)}
+}
+
+/* top bar */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:24px 32px;pointer-events:none}
+.brand{pointer-events:auto;font:700 19px/1 var(--display);letter-spacing:.01em;color:#fff;mix-blend-mode:difference;animation:fadeUp .8s var(--ease) both}
+.brand b{font-weight:700;margin-left:5px}
+.pillnav{pointer-events:auto;display:flex;align-items:center;gap:6px;padding:6px;border:1px solid var(--line);border-radius:999px;background:rgba(244,245,241,.86);backdrop-filter:blur(14px);animation:fadeUp .8s .15s var(--ease) both}
+.pillnav a{font:500 13px/1 var(--body);color:var(--muted);padding:10px 14px;border-radius:999px;transition:background .3s var(--ease),color .3s var(--ease)}
+.pillnav a:hover{background:var(--ink);color:#fff}
+.pillnav .gh{display:inline-flex;align-items:center;gap:7px;background:var(--ink);color:#fff}
+.pillnav .gh:hover{background:var(--signal)}
+.progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:200;background:linear-gradient(90deg,var(--bright),var(--blue),var(--ember));transform-origin:0 50%;transform:scaleX(0)}
+
+/* hero */
+.hero{position:relative;min-height:900px;display:flex;align-items:center;justify-content:center;overflow:hidden;text-align:center;padding:150px 0 120px;
+  background-image:linear-gradient(rgba(16,18,17,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(16,18,17,.055) 1px,transparent 1px);background-size:48px 48px}
+.sky{position:absolute;top:0;left:-6%;width:112%;height:560px;pointer-events:none;-webkit-mask-image:linear-gradient(#000 40%,transparent);mask-image:linear-gradient(#000 40%,transparent);animation:drift 22s ease-in-out infinite alternate}
+.sky-base{position:absolute;top:0;left:0;right:0;height:560px;background:linear-gradient(#d9ece4,#f4f5f1);-webkit-mask-image:linear-gradient(#000 30%,transparent);mask-image:linear-gradient(#000 30%,transparent)}
+.loop{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.loop path{fill:none;stroke:#8e9a93;stroke-width:1.4;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 3.4s .6s var(--ease) forwards}
+.hero-core{position:relative;z-index:5;width:min(100% - 64px,1280px)}
+.mask{display:block;overflow:hidden;padding:.06em .04em .1em;margin:-.06em 0 -.1em}
+.mask>span{display:block;animation:rise 1.05s var(--ease) both;animation-delay:calc(.15s + var(--n,0) * .14s)}
+.hero h1{font:700 clamp(46px,8.3vw,122px)/.98 var(--display);letter-spacing:-.035em;text-transform:uppercase}
+.hero h1 .l1>span{display:flex;align-items:center;justify-content:center;gap:.22em}
+.hero h1 .l2{font-size:.6em;letter-spacing:-.03em;color:var(--signal);margin-top:.12em}
+.slot{position:relative;display:inline-block;width:1.7em;height:.74em;border-radius:.1em;overflow:hidden;border:.045em solid var(--ink);background:var(--paper);box-shadow:0 10px 30px rgba(16,18,17,.18);flex:none;animation:pop .9s .55s var(--pop) both}
+.sl{position:absolute;inset:0;animation:slot 9s infinite both}
+.sl:nth-child(1){animation-delay:1.6s}
+.sl:nth-child(2){animation-delay:4.6s}
+.sl:nth-child(3){animation-delay:7.6s}
+.sl img{width:100%;height:100%;object-fit:cover;object-position:left top;display:block}
+.sl .kb{position:absolute;inset:0;display:grid;grid-template-columns:repeat(12,1fr);gap:.035em;padding:.07em;align-content:center}
+.sl .kb i{display:block;height:.1em;border-radius:.02em;background:rgba(255,255,255,.9)}
+.sl.s2{background:var(--blue)}
+.sl.s3{background:var(--ember)}
+.hero-copy{font-size:clamp(16px,1.5vw,20px);line-height:1.65;color:var(--muted);max-width:640px;margin:34px auto 0;animation:fadeUp 1s .85s var(--ease) both}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-top:34px;animation:fadeUp 1s 1s var(--ease) both}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:15px 24px;border-radius:12px;font:600 15px/1 var(--body);transition:transform .35s var(--ease),background .3s,box-shadow .35s var(--ease);min-height:48px}
+.btn:hover{transform:translateY(-3px)}
+.btn.primary{background:var(--ink);color:#fff;box-shadow:0 14px 28px -12px rgba(16,18,17,.55)}
+.btn.primary:hover{background:var(--signal)}
+.btn.ghost{background:rgba(255,255,255,.7);border:1px solid var(--line);backdrop-filter:blur(6px)}
+.btn.ghost:hover{border-color:var(--ink)}
+.proof{position:absolute;left:0;right:0;bottom:44px;display:flex;justify-content:center;gap:34px;flex-wrap:wrap;font:500 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);z-index:5;animation:fadeUp 1s 1.3s var(--ease) both}
+.proof span::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--bright);margin-right:10px}
+.cue{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);font:500 11px/1 var(--mono);letter-spacing:.2em;z-index:5}
+
+/* stickers */
+.stk{position:absolute;z-index:3}
+.stk .pp{animation:pop 1s var(--pop) both;animation-delay:calc(.7s + var(--n,0) * .13s)}
+.stk svg{display:block;width:100%;height:auto;animation:bob 6.5s ease-in-out infinite alternate;animation-delay:calc(var(--n,0) * -1.3s);filter:drop-shadow(3px 0 0 #fff) drop-shadow(-3px 0 0 #fff) drop-shadow(0 3px 0 #fff) drop-shadow(0 -3px 0 #fff) drop-shadow(0 18px 18px rgba(16,18,17,.22))}
+.stk.s-term{left:4.2%;top:128px;width:250px;transform:rotate(-8deg)}
+.stk.s-kb{right:2.4%;top:96px;width:380px;transform:rotate(11deg)}
+.stk.s-chip{left:7.5%;bottom:120px;width:168px;transform:rotate(-10deg)}
+.stk.s-db{right:9%;bottom:96px;width:190px;transform:rotate(8deg)}
+.stk.s-badge{left:24%;bottom:70px;width:124px}
+.stk.s-badge svg{animation:spin 16s linear infinite}
+.kcap{position:absolute;font:500 11px/1 var(--mono);letter-spacing:.1em}
+
+/* about */
+.about{padding:150px 0 110px}
+.about-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:72px;align-items:start}
+.name{font:700 clamp(84px,13vw,196px)/.86 var(--display);letter-spacing:-.05em;margin:22px 0 40px -.04em}
+.about-copy{display:flex;flex-direction:column;gap:22px;max-width:560px}
+.about-copy p{font-size:17px;line-height:1.7;color:#2b312e}
+.about-copy strong{font-weight:600;color:var(--signal)}
+.photo{position:relative;margin-top:36px}
+.photo .shot{position:relative;aspect-ratio:460/256;overflow:hidden;border-radius:6px;background:#0a2230}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.corners{position:relative}
+.corners::before,.corners::after{content:'';position:absolute;width:22px;height:22px;pointer-events:none;z-index:4;border:2px solid var(--ink)}
+.corners::before{left:-10px;top:-10px;border-right:0;border-bottom:0}
+.corners::after{right:-10px;bottom:-10px;border-left:0;border-top:0}
+.note{position:relative;width:280px;margin:28px 0 0 40px;transform:rotate(-3deg);background:#fff;padding:20px 20px 22px;border-radius:4px;box-shadow:0 20px 36px -18px rgba(16,18,17,.35),0 0 0 1px var(--line)}
+.note::before{content:'';position:absolute;left:-14px;right:-14px;top:-16px;height:22px;border-radius:11px;background:#2b312e}
+.note p{font:400 13px/1.8 var(--mono);color:#1c211f}
+.typed{display:block;overflow:hidden;white-space:nowrap;width:30ch}
+.pillars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px;margin-top:100px}
+.pillar{position:relative;padding-top:26px}
+.pillar .rule{position:absolute;top:0;left:0;right:0;height:2px;background:var(--ink);transform-origin:0 50%}
+.pillar h3{font:700 26px/1.1 var(--display);letter-spacing:-.02em;margin-bottom:12px}
+.pillar p{font-size:15px;line-height:1.65;color:var(--muted);max-width:34ch}
+.pillar .no{position:absolute;right:0;top:26px;font:500 12px/1 var(--mono);color:var(--muted)}
+
+/* marquee */
+.marquee{border-block:1px solid var(--line);background:var(--paper);overflow:hidden;padding:26px 0;position:relative}
+.mq-label{position:absolute;left:32px;top:50%;transform:translateY(-50%);z-index:2;font:500 11px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;background:var(--paper);padding:10px 16px 10px 0;box-shadow:24px 0 24px var(--paper)}
+.mq-track{display:flex;width:max-content;animation:marquee 46s linear infinite}
+.marquee:hover .mq-track{animation-play-state:paused}
+.mq-item{display:inline-flex;align-items:center;gap:56px;padding-right:56px;font:700 34px/1 var(--display);letter-spacing:-.03em;white-space:nowrap}
+.mq-item::after{content:'';width:10px;height:10px;border-radius:50%;background:var(--bright)}
+.mq-item.v1{font-family:var(--mono);font-weight:500;font-size:28px;letter-spacing:-.04em}
+.mq-item.v2{font-style:italic;font-weight:600}
+.mq-item.v3{text-transform:uppercase;letter-spacing:.02em;font-size:30px}
+.mq-item.c1::after{background:var(--blue)}
+.mq-item.c3::after{background:var(--ember)}
+
+/* works */
+.works{padding:150px 0 40px}
+.works-head{position:relative;text-align:center;margin-bottom:70px}
+.works-title{display:inline-block;font:700 clamp(96px,17vw,250px)/.82 var(--display);letter-spacing:-.05em;position:relative}
+.works-title sup{position:absolute;top:.04em;right:-.34em;font:500 .16em/1 var(--mono);letter-spacing:0}
+.works-head .eyebrow{display:flex;justify-content:space-between;margin-bottom:40px}
+.works-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:0;border-top:1px solid var(--line)}
+.work{padding:44px 28px 56px;border-bottom:1px solid var(--line)}
+.work:nth-child(odd){border-right:1px solid var(--line);padding-left:0}
+.work:nth-child(even){padding-right:0}
+.frame{position:relative;aspect-ratio:16/10;background:var(--paper);overflow:hidden;border-radius:2px}
+.frame-wrap{position:relative;display:block;margin:0 10px 0 10px}
+.frame-wrap::before,.frame-wrap::after{content:'';position:absolute;width:24px;height:24px;border:2px solid var(--ink);z-index:6;pointer-events:none}
+.frame-wrap::before{left:-10px;top:-10px;border-right:0;border-bottom:0}
+.frame-wrap::after{right:-10px;bottom:-10px;border-left:0;border-top:0}
+.frame .inner{position:absolute;inset:0;transition:transform 1.1s var(--ease)}
+.work:hover .frame .inner{transform:scale(1.045)}
+.px{position:absolute;inset:0;display:none;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(3,1fr);z-index:5;pointer-events:none}
+.px i{background:var(--bg)}
+.px i:nth-child(1){--k:7}.px i:nth-child(2){--k:2}.px i:nth-child(3){--k:10}.px i:nth-child(4){--k:4}
+.px i:nth-child(5){--k:11}.px i:nth-child(6){--k:0}.px i:nth-child(7){--k:6}.px i:nth-child(8){--k:9}
+.px i:nth-child(9){--k:3}.px i:nth-child(10){--k:8}.px i:nth-child(11){--k:1}.px i:nth-child(12){--k:5}
+.meta{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin:34px 10px 0}
+.meta h3{font:700 34px/1 var(--display);letter-spacing:-.03em}
+.meta .sub{font-size:16px;margin-top:12px}
+.meta .by{font:500 12px/1.5 var(--mono);letter-spacing:.04em;color:var(--muted);margin-top:8px}
+.meta .desc{font-size:14.5px;line-height:1.65;color:var(--muted);margin-top:16px;max-width:44ch}
+.chips{display:flex;gap:6px;flex:none}
+.chip{display:inline-flex;align-items:center;gap:7px;font:600 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--ink);padding:12px 14px;border-radius:6px;min-height:40px;box-shadow:0 3px 0 #000;transition:transform .2s var(--ease),box-shadow .2s var(--ease),background .25s}
+.chip:hover{transform:translateY(2px);box-shadow:0 1px 0 #000;background:var(--signal)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.tags span{font:500 11px/1 var(--mono);padding:7px 9px;border:1px solid var(--line);border-radius:4px;color:#2b312e;background:rgba(255,255,255,.6)}
+.browser{position:absolute;inset:0;display:flex;flex-direction:column;background:#fff}
+.browser .bar{height:30px;flex:none;display:flex;align-items:center;gap:6px;padding:0 12px;background:#eceee9;border-bottom:1px solid var(--line)}
+.browser .bar i{width:9px;height:9px;border-radius:50%;background:#c9d0ca}
+.browser .bar p{margin-left:10px;font:400 10.5px/1 var(--mono);color:var(--muted)}
+.browser img{flex:1;min-height:0;width:100%;object-fit:cover;object-position:left top;display:block}
+.kbscene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:34px}
+.kbscene.blue{background:var(--blue)}
+.kbscene.amber{background:var(--ember)}
+.readout{width:86%;height:44px;border-radius:8px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);display:flex;align-items:center;padding:0 16px;font:500 15px/1 var(--mono);color:#fff;letter-spacing:.06em}
+.readout i{display:inline-block;width:2px;height:18px;background:#fff;margin-left:4px;animation:blink 1s steps(1) infinite}
+.keys{width:86%;display:grid;grid-template-columns:repeat(12,1fr);gap:6px}
+.key{display:block;aspect-ratio:1;border-radius:5px;background:#f3ecdc;box-shadow:0 3px 0 rgba(0,0,0,.28);animation:press 5s infinite}
+.space{width:44%;height:22px;border-radius:5px;background:#f3ecdc;box-shadow:0 3px 0 rgba(0,0,0,.28)}
+.more{display:flex;flex-direction:column;justify-content:space-between;min-height:100%}
+.more .box{position:relative;aspect-ratio:16/10;border:1.5px dashed #9aa59f;display:flex;flex-direction:column;justify-content:space-between;padding:30px;overflow:hidden;transition:background .4s var(--ease),border-color .4s}
+.more .box:hover{background:var(--ink);border-color:var(--ink);color:#fff}
+.more .box::after{content:'';position:absolute;top:0;bottom:0;width:30%;background:linear-gradient(90deg,transparent,rgba(56,211,159,.18),transparent);animation:sweep 4s linear infinite}
+.more h3{font:700 clamp(30px,3.4vw,46px)/1.02 var(--display);letter-spacing:-.03em}
+.more svg{align-self:flex-end}
+
+/* featured case */
+.case{padding:120px 0 150px}
+.case-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:64px;align-items:start}
+.case-side{position:sticky;top:96px}
+.case-side h2{font:700 clamp(44px,5.4vw,78px)/.92 var(--display);letter-spacing:-.045em;margin:18px 0 22px}
+.case-side .lede{font-size:16px;margin-bottom:6px}
+.acc{margin-top:26px;border-top:1px solid var(--ink)}
+.acc details{border-bottom:1px solid var(--line)}
+.acc summary{list-style:none;display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:18px 0;font:600 15px/1 var(--body);min-height:48px}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary::after{content:'+';font:400 22px/1 var(--mono);transition:transform .4s var(--ease)}
+.acc details[open] summary::after{transform:rotate(45deg)}
+.acc details p{font-size:14.5px;line-height:1.7;color:var(--muted);padding:0 0 20px;max-width:46ch}
+.case-actions{display:flex;gap:8px;margin-top:28px}
+.case-stack{display:flex;flex-direction:column;gap:54px}
+.cs-frame{position:relative;background:var(--paper);overflow:hidden;border-radius:2px;box-shadow:0 30px 60px -36px rgba(16,18,17,.4)}
+.cs-label{display:flex;justify-content:space-between;font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:14px}
+.roles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:28px;background:#eef1ec}
+.role{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px;min-height:170px;display:flex;flex-direction:column;justify-content:space-between}
+.role h4{margin:0;font:700 17px/1 var(--display);letter-spacing:-.01em}
+.role small{display:block;font:500 10.5px/1.4 var(--mono);color:var(--muted);margin-top:6px;letter-spacing:.04em}
+.bars{display:flex;align-items:flex-end;gap:6px;height:64px}
+.bars i{flex:1;border-radius:3px 3px 0 0;background:var(--c,var(--signal));opacity:.85;transform-origin:50% 100%}
+.bars i:nth-child(1){height:38%}.bars i:nth-child(2){height:62%}.bars i:nth-child(3){height:48%}.bars i:nth-child(4){height:84%}.bars i:nth-child(5){height:70%}
+.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:46px 26px 40px;position:relative;background:var(--dark);color:#fff}
+.flow::before{content:'';position:absolute;left:12%;right:12%;top:60px;height:2px;background:#2b332f}
+.flow .dot{position:absolute;top:55px;left:12%;width:12px;height:12px;border-radius:50%;background:var(--bright);box-shadow:0 0 18px var(--bright);animation:flowmove 5s var(--ease) infinite}
+@keyframes flowmove{
+  0%{left:12%}
+  80%,100%{left:calc(88% - 12px)}
+}
+.flow div{position:relative;text-align:center;padding:0 6px}
+.flow div::before{content:'';display:block;width:18px;height:18px;border-radius:50%;background:var(--dark);border:2px solid var(--bright);margin:0 auto 22px;position:relative;z-index:2}
+.flow b{display:block;font:700 17px/1.1 var(--display)}
+.flow span{display:block;font:400 12px/1.5 var(--body);color:#aeb8b2;margin-top:8px}
+
+/* focus (dark) */
+.focus{position:relative;background:var(--dark);color:#fff;border-radius:44px 44px 0 0;timeline-scope:--s1,--s2,--s3,--s4,--s5}
+.stage{position:sticky;top:0;height:760px;z-index:1;overflow:hidden}
+.focus-label{position:absolute;top:34px;left:0;right:0;text-align:center;font:600 14px/1 var(--body);display:flex;align-items:center;justify-content:center;gap:10px}
+.focus-label::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--bright)}
+.list{position:relative;z-index:2;margin-top:-760px;padding:330px 0 330px;text-align:center}
+.svc{height:380px;display:flex;align-items:center;justify-content:center}
+.svc h3{font:700 clamp(40px,6.2vw,92px)/1.04 var(--display);letter-spacing:-.045em;color:#fff;padding:0 24px}
+.svc:nth-child(1){view-timeline:--s1 block}
+.svc:nth-child(2){view-timeline:--s2 block}
+.svc:nth-child(3){view-timeline:--s3 block}
+.svc:nth-child(4){view-timeline:--s4 block}
+.svc:nth-child(5){view-timeline:--s5 block}
+.art{position:absolute;width:214px;height:274px;border-radius:16px;background:#171c19;border:1px solid #2b332f;padding:14px;display:none;flex-direction:column;gap:10px;--c:var(--bright)}
+.art.l{left:7%;top:170px;--r:-5deg}
+.art.r{right:7%;top:250px;--r:5deg}
+.art .dots{display:block;height:8px;width:36px;background:radial-gradient(circle,#4a544e 3.5px,transparent 4px) 0 0/12px 8px}
+.art .blk{display:block;height:92px;border-radius:9px;background:var(--c);opacity:.9}
+.art .ln{display:block;height:9px;border-radius:5px;background:#2b332f;width:88%}
+.art .ln.s{width:56%}
+.art .tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1}
+.art .tiles i{border-radius:8px;background:#222a26;border:1px solid #2f3833}
+.art .tiles i:nth-child(2){background:var(--c);opacity:.85}
+.art .tiles i:nth-child(3){background:var(--c);opacity:.45}
+.a2{--c:#6f8cff}.a3{--c:#e69a5a}.a4{--c:#b9a6ff}.a5{--c:#38d39f}
+
+/* process */
+.process{padding:150px 0}
+.process-grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:64px;align-items:start}
+.process-grid .side{position:sticky;top:110px}
+.process-grid h2,.stack h2{font:700 clamp(40px,4.8vw,70px)/.98 var(--display);letter-spacing:-.045em;margin:18px 0 22px}
+.rail{position:relative;padding-left:56px}
+.rail::before{content:'';position:absolute;left:11px;top:8px;bottom:8px;width:2px;background:var(--line)}
+.rail-fill{position:absolute;left:11px;top:8px;bottom:8px;width:2px;background:var(--signal);transform-origin:50% 0;transform:scaleY(1)}
+.step{position:relative;padding:0 0 58px}
+.step:last-child{padding-bottom:0}
+.step::before{content:'';position:absolute;left:-52px;top:10px;width:14px;height:14px;border-radius:50%;background:var(--bg);border:2px solid var(--signal)}
+.step .n{font:500 12px/1 var(--mono);letter-spacing:.14em;color:var(--signal)}
+.step h3{font:700 clamp(34px,4vw,56px)/1 var(--display);letter-spacing:-.04em;margin:12px 0 12px}
+.step p{font-size:16.5px;line-height:1.65;color:var(--muted);max-width:44ch}
+
+/* stack */
+.stack{padding:30px 0 150px}
+.stack-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:50px}
+.panel{position:relative;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:30px;min-height:290px;overflow:hidden;transition:transform .5s var(--ease),border-color .3s}
+.panel:hover{transform:translateY(-6px);border-color:var(--ink)}
+.panel h3{font:700 28px/1 var(--display);letter-spacing:-.03em;margin:34px 0 26px}
+.panel .pl{display:flex;flex-wrap:wrap;gap:8px}
+.panel .pl span{font:500 13px/1 var(--body);padding:10px 13px;border-radius:9px;border:1px solid var(--line);background:var(--bg)}
+.panel .ico{width:46px;height:46px;border-radius:12px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:center}
+.panel:nth-child(2) .ico{background:var(--blue)}
+.panel:nth-child(3) .ico{background:var(--ember)}
+.panel:nth-child(1) .ico{background:var(--signal)}
+
+/* contact */
+.contact{position:relative;padding:130px 0 150px;background:#e6e8e1;overflow:clip}
+.contact-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:60px;align-items:center}
+.env-wrap{position:relative;height:520px;display:flex;align-items:center;justify-content:center}
+.env{position:relative;width:min(100%,460px);height:300px}
+.env .back{position:absolute;inset:0;border-radius:14px;background:#1a1f1c;box-shadow:0 40px 60px -30px rgba(16,18,17,.6)}
+.env .letter{position:absolute;left:7%;right:7%;bottom:14px;height:250px;background:#fff;border-radius:6px;z-index:2;padding:26px 24px;box-shadow:0 0 0 1px var(--line);transform:translateY(-150px)}
+.env .letter h4{margin:0;font:700 40px/1 var(--display);letter-spacing:-.04em}
+.env .letter p{font:400 12.5px/1.7 var(--mono);color:var(--muted);margin-top:14px}
+.env .letter .sig{display:block;width:70px;height:4px;border-radius:2px;background:var(--signal);margin-top:18px}
+.env .front{position:absolute;inset:0;z-index:3;background:#262c28;border-radius:14px;clip-path:polygon(0 100%,0 26%,50% 64%,100% 26%,100% 100%)}
+.env .flap{position:absolute;left:0;right:0;top:0;height:64%;z-index:0;background:#303733;clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:50% 0;transform:scaleY(-1)}
+.env-glow{position:absolute;width:420px;height:420px;border-radius:50%;background:var(--bright);opacity:.18;filter:blur(90px);left:50%;top:50%;transform:translate(-50%,-50%)}
+.contact h2{font:700 clamp(42px,5.4vw,80px)/.96 var(--display);letter-spacing:-.045em;margin:18px 0 22px}
+.metrics{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 30px}
+.metrics span{font:500 12px/1 var(--mono);letter-spacing:.06em;padding:10px 12px;border:1px solid #b4bdb6;border-radius:999px}
+.rail-links{position:absolute;right:32px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;z-index:3}
+.rail-links a{width:46px;height:46px;border-radius:10px;border:1px solid #9aa59f;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.55);transition:background .3s,color .3s,transform .3s var(--ease)}
+.rail-links a:hover{background:var(--ink);color:#fff;transform:translateX(-4px)}
+.footer{background:var(--dark);color:#aeb8b2;padding:34px 0}
+.footer .wrap{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;font-size:14px}
+.footer a{margin-left:22px;transition:color .2s}
+.footer a:hover{color:#fff}
+
+/* responsive */
+@media (max-width:980px){
+  .about-grid,.case-grid,.process-grid,.contact-grid{grid-template-columns:minmax(0,1fr);gap:48px}
+  .case-side,.process-grid .side{position:static}
+  .works-grid{grid-template-columns:minmax(0,1fr)}
+  .work:nth-child(odd){border-right:0}
+  .work{padding-left:0;padding-right:0}
+  .stack-grid,.pillars{grid-template-columns:minmax(0,1fr)}
+  .stk.s-term,.stk.s-chip,.stk.s-badge{display:none}
+  .stk.s-kb{width:220px;top:80px}
+  .stk.s-db{width:120px;bottom:110px}
+  .pillnav a:not(.gh){display:none}
+  .rail-links{display:none}
+  .art{display:none!important}
+}
+
+/* scroll-driven choreography (graceful: everything is visible without support) */
+@supports (animation-timeline: view()) {
+  @keyframes revealUp{
+    from{opacity:0;transform:translateY(70px)}
+    to{opacity:1;transform:none}
+  }
+  @keyframes blurIn{
+    from{opacity:.12;filter:blur(10px)}
+    to{opacity:1;filter:none}
+  }
+  @keyframes clipIn{
+    from{clip-path:inset(0 0 100% 0)}
+    to{clip-path:inset(0 0 0 0)}
+  }
+  @keyframes zoomOut{
+    from{transform:scale(1.28)}
+    to{transform:scale(1)}
+  }
+  @keyframes ruleIn{
+    from{transform:scaleX(0)}
+    to{transform:scaleX(1)}
+  }
+  @keyframes typeIn{
+    from{width:0}
+    to{width:30ch}
+  }
+  @keyframes titleIn{
+    from{opacity:0;transform:scale(.84);letter-spacing:.04em}
+    to{opacity:1;transform:none;letter-spacing:-.05em}
+  }
+  @keyframes block{
+    from{opacity:1}
+    60%{opacity:1}
+    to{opacity:0}
+  }
+  @keyframes progress{
+    to{transform:scaleX(1)}
+  }
+  @keyframes heroOut{
+    to{transform:translateY(-60px) scale(.6);opacity:0}
+  }
+  @keyframes par{
+    to{transform:translateY(var(--py)) rotate(var(--pr))}
+  }
+  @keyframes wordFocus{
+    0%,100%{color:#69716c;transform:scale(.9)}
+    50%{color:#fff;transform:scale(1)}
+  }
+  @keyframes artIn{
+    0%{opacity:0;transform:translateY(60px) rotate(var(--r)) scale(.9)}
+    32%,68%{opacity:1;transform:translateY(0) rotate(var(--r)) scale(1)}
+    100%{opacity:0;transform:translateY(-60px) rotate(var(--r)) scale(.9)}
+  }
+  @keyframes fillRail{
+    from{transform:scaleY(0)}
+    to{transform:scaleY(1)}
+  }
+  @keyframes flapOpen{
+    0%{transform:scaleY(1);z-index:5}
+    49%{z-index:5}
+    50%{transform:scaleY(0);z-index:0}
+    100%{transform:scaleY(-1);z-index:0}
+  }
+  @keyframes letterUp{
+    from{transform:translateY(130px)}
+    to{transform:translateY(-150px)}
+  }
+  @keyframes barsGrow{
+    from{transform:scaleY(.05)}
+    to{transform:scaleY(1)}
+  }
+
+  .progress{animation:progress linear both;animation-timeline:scroll(root block)}
+  .hero-core{animation:heroOut linear both;animation-timeline:scroll(root block);animation-range:0px 680px}
+  .stk{animation:par linear both;animation-timeline:scroll(root block);animation-range:0px 900px}
+  .stk.s-term{--py:-90px;--pr:-16deg}
+  .stk.s-kb{--py:-140px;--pr:20deg}
+  .stk.s-chip{--py:-210px;--pr:-22deg}
+  .stk.s-db{--py:-170px;--pr:16deg}
+  .stk.s-badge{--py:-240px;--pr:0deg}
+
+  .px{display:grid}
+  .rv{animation:revealUp linear both;animation-timeline:view();animation-range:entry calc(0% + var(--o,0%)) entry calc(60% + var(--o,0%))}
+  .bl{animation:blurIn linear both;animation-timeline:view();animation-range:entry 10% entry 80%}
+  .d1{--o:6%}.d2{--o:12%}.d3{--o:18%}
+  .photo .shot{animation:clipIn linear both;animation-timeline:view();animation-range:entry 0% entry 70%}
+  .photo img{animation:zoomOut linear both;animation-timeline:view();animation-range:entry 0% cover 50%}
+  .pillar .rule{animation:ruleIn linear both;animation-timeline:view();animation-range:entry 20% entry 90%}
+  .typed{animation:typeIn steps(30) both;animation-timeline:view();animation-range:entry 40% entry 85%}
+  .typed.t2{animation-range:entry 70% entry 120%}
+  .works-title{animation:titleIn linear both;animation-timeline:view();animation-range:entry 0% cover 40%}
+  .px i{animation:block steps(2) both;animation-timeline:view();animation-range:entry calc(2% + var(--k) * 3.4%) entry calc(36% + var(--k) * 3.4%)}
+  .bars i{animation:barsGrow linear both;animation-timeline:view();animation-range:entry 10% entry 70%}
+  .bars i:nth-child(2){animation-range:entry 14% entry 74%}
+  .bars i:nth-child(3){animation-range:entry 18% entry 78%}
+  .bars i:nth-child(4){animation-range:entry 22% entry 82%}
+  .bars i:nth-child(5){animation-range:entry 26% entry 86%}
+
+  .svc h3{color:#69716c;animation:wordFocus linear both;animation-timeline:view();animation-range:cover 28% cover 72%}
+  .art{display:flex;opacity:0;animation:artIn linear both;animation-range:cover 22% cover 78%}
+  .a1{animation-timeline:--s1}.a2{animation-timeline:--s2}.a3{animation-timeline:--s3}.a4{animation-timeline:--s4}.a5{animation-timeline:--s5}
+
+  .rail-fill{animation:fillRail linear both;animation-timeline:view();animation-range:cover 14% cover 70%}
+  .step{animation:revealUp linear both;animation-timeline:view();animation-range:entry 0% entry 55%}
+
+  /* Envelope. v3's original wiring used a NAMED view timeline whose subject
+     was an ancestor; it resolved, but its progress froze at 28.758% and the
+     flap never opened (measured). `scroll(root)` is the mechanism verified
+     working elsewhere on this page (.hero-core, .progress), so the envelope
+     is driven from document scroll progress instead. */
+  .flap{animation:flapOpen linear both;animation-timeline:scroll(root block);animation-range:86% 94%}
+  .env .letter{animation:letterUp linear both;animation-timeline:scroll(root block);animation-range:90% 97%}
+}
+@media (prefers-reduced-motion: reduce){
+  .page *,.page *::before,.page *::after{animation:none!important;transition:none!important}
+  .env .letter{transform:translateY(-150px)}
+}
+</style>
+
+</head>
+<body>
+<div class="page" style="--signal: #1f7a5c">
+
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="topbar">
+    <a class="brand" href="#home" aria-label="MOMOLILI TECH home">MOMOLILI<b>TECH</b></a>
+    <nav class="pillnav" aria-label="Primary navigation">
+      <a href="#about">About</a>
+      <a href="#works">Work</a>
+      <a href="#focus">Focus</a>
+      <a href="#process">Process</a>
+      <a href="#contact">Contact</a>
+      <a class="gh" href="https://github.com/MOSES-LEO-tech" target="_blank" rel="noopener noreferrer">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+        GitHub
+      </a>
+    </nav>
+  </header>
+
+  <main>
+  <!-- ═════════ HERO ═════════ -->
+  <section id="home" class="hero">
+    <div class="sky-base" aria-hidden="true"></div>
+    <svg class="sky" aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 1600 560">
+      <filter id="cloudA" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.0042 0.0105" numOctaves="5" seed="11"/><feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 0.74  0 0 0 0 0.58  0 0 0 2.7 -1"/></filter>
+      <filter id="cloudB" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.0055 0.013" numOctaves="4" seed="4"/><feColorMatrix type="matrix" values="0 0 0 0 0.58  0 0 0 0 0.9  0 0 0 0 0.76  0 0 0 2.4 -0.9"/></filter>
+      <rect width="1600" height="560" filter="url(#cloudB)"/>
+      <rect width="1600" height="560" filter="url(#cloudA)"/>
+    </svg>
+
+    <svg class="loop" aria-hidden="true" viewBox="0 0 1440 900" preserveAspectRatio="none">
+      <path pathLength="1" d="M130 760 C 60 560, 360 470, 430 640 S 640 860, 760 700 S 560 480, 700 520 S 1040 690, 1010 560 S 1180 340, 1310 480 S 1380 760, 1250 790"/>
+    </svg>
+
+    <!-- stickers -->
+    <div class="stk s-term" style="--n:0"><div class="pp">
+      <svg viewBox="0 0 260 170" role="img" aria-label="Terminal window sticker">
+        <rect x="4" y="4" width="252" height="162" rx="14" fill="#101211"/>
+        <rect x="4" y="4" width="252" height="30" rx="14" fill="#1d2220"/>
+        <rect x="4" y="22" width="252" height="12" fill="#1d2220"/>
+        <circle cx="22" cy="19" r="5" fill="#ff6b5e"/><circle cx="40" cy="19" r="5" fill="#f6c244"/><circle cx="58" cy="19" r="5" fill="#38d39f"/>
+        <g font-family="IBM Plex Mono, monospace" font-size="12.5">
+          <text x="18" y="62" fill="#38d39f">$ bun run build</text>
+          <text x="18" y="86" fill="#cfd8d3">✓ typed, strict</text>
+          <text x="18" y="108" fill="#cfd8d3">✓ rls policies ok</text>
+          <text x="18" y="130" fill="#ffffff">▲ deployed to vercel</text>
+        </g>
+        <rect x="18" y="140" width="8" height="14" fill="#38d39f"><animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite" calcMode="discrete"/></rect>
+      </svg>
+    </div></div>
+
+    <div class="stk s-kb" style="--n:1"><div class="pp">
+      <svg viewBox="0 0 340 210" role="img" aria-label="Mechanical keyboard sticker">
+        <defs><pattern id="kp1" width="26" height="26" patternUnits="userSpaceOnUse" x="24" y="24"><rect x="1.5" y="1.5" width="23" height="23" rx="4.5" fill="#f3ecdc" stroke="#d1c7ae" stroke-width="1.4"/></pattern></defs>
+        <rect x="4" y="4" width="332" height="202" rx="20" fill="#2a2d2b"/>
+        <rect x="14" y="14" width="312" height="182" rx="14" fill="#e6dfcb"/>
+        <rect x="24" y="24" width="286" height="130" fill="url(#kp1)"/>
+        <rect x="25.5" y="25.5" width="49" height="23" rx="4.5" fill="#3157d8"/>
+        <rect x="25.5" y="103.5" width="75" height="23" rx="4.5" fill="#3157d8"/>
+        <rect x="259.5" y="77.5" width="49" height="23" rx="4.5" fill="#d8402f"/>
+        <rect x="233.5" y="129.5" width="23" height="23" rx="4.5" fill="#c76f2a"/>
+        <rect x="259.5" y="129.5" width="49" height="23" rx="4.5" fill="#3157d8"/>
+        <rect x="103.5" y="129.5" width="127" height="23" rx="4.5" fill="#f3ecdc" stroke="#d1c7ae" stroke-width="1.4"/>
+        <rect x="24" y="160" width="286" height="24" rx="6" fill="#d4cbb3"/>
+      </svg>
+    </div></div>
+
+    <div class="stk s-chip" style="--n:2"><div class="pp">
+      <svg viewBox="0 0 190 190" role="img" aria-label="Processor chip sticker">
+        <g stroke="#8a948f" stroke-width="12" fill="none">
+          <path d="M44 14H150" stroke-dasharray="9 13"/><path d="M44 176H150" stroke-dasharray="9 13"/>
+          <path d="M14 44V150" stroke-dasharray="9 13"/><path d="M176 44V150" stroke-dasharray="9 13"/>
+        </g>
+        <rect x="26" y="26" width="138" height="138" rx="16" fill="#1d2321"/>
+        <rect x="46" y="46" width="98" height="98" rx="10" fill="#38d39f"/>
+        <text x="95" y="112" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="46" fill="#101211">TS</text>
+      </svg>
+    </div></div>
+
+    <div class="stk s-db" style="--n:3"><div class="pp">
+      <svg viewBox="0 0 200 200" role="img" aria-label="Database stack sticker">
+        <g>
+          <path d="M20 140v30a80 24 0 0 0 160 0v-30z" fill="#14634a"/><ellipse cx="100" cy="140" rx="80" ry="24" fill="#2aa57b"/>
+          <path d="M20 94v30a80 24 0 0 0 160 0v-30z" fill="#1a7a5c"/><ellipse cx="100" cy="94" rx="80" ry="24" fill="#38d39f"/>
+          <path d="M20 48v30a80 24 0 0 0 160 0v-30z" fill="#1f8f6b"/><ellipse cx="100" cy="48" rx="80" ry="24" fill="#7be8c3"/>
+          <text x="100" y="54" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-weight="600" font-size="15" fill="#0e3a2b">SQL</text>
+        </g>
+      </svg>
+    </div></div>
+
+    <div class="stk s-badge" style="--n:4"><div class="pp">
+      <svg viewBox="0 0 170 170" role="img" aria-label="Build without limits badge">
+        <circle cx="85" cy="85" r="82" fill="#101211"/>
+        <defs><path id="ring" d="M85 85 m-60 0 a60 60 0 1 1 120 0 a60 60 0 1 1 -120 0"/></defs>
+        <text font-family="IBM Plex Mono, monospace" font-weight="600" font-size="13.4" letter-spacing="2.4" fill="#38d39f"><textPath href="#ring">BUILD WITHOUT LIMITS • BUILD WITHOUT LIMITS •</textPath></text>
+        <path d="M85 62l6 17 17 6-17 6-6 17-6-17-17-6 17-6z" fill="#fff"/>
+      </svg>
+    </div></div>
+
+    <div class="hero-core">
+      <h1 aria-label="Build software without limits.">
+        <span class="mask l1" style="--n:0"><span>
+          <span aria-hidden="true">Build</span>
+          <span class="slot" aria-hidden="true">
+            <span class="sl s1"><img src="assets/milestone.jpg" alt=""></span>
+            <span class="sl s2"><span class="kb"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span>
+            <span class="sl s3"><span class="kb"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span>
+          </span>
+          <span aria-hidden="true">software</span>
+        </span></span>
+        <span class="mask l2" style="--n:2"><span aria-hidden="true">without limits.</span></span>
+      </h1>
+      <p class="hero-copy">I turn clean architecture, expressive interfaces, and fast product loops into web systems that feel considered from first scroll to final deploy.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#works">View the work
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+        <a class="btn ghost" href="https://github.com/MOSES-LEO-tech" target="_blank" rel="noopener noreferrer">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+
+    <div class="proof" aria-label="Portfolio highlights">
+      <span>React and TypeScript</span><span>Supabase systems</span><span>Animated product interfaces</span><span>Deployed work</span>
+    </div>
+    <a class="cue" href="#about" aria-label="Scroll to about">MEET MOSES ↓</a>
+  </section>
+
+  <!-- ═════════ ABOUT ═════════ -->
+  <section id="about" class="about">
+    <div class="wrap">
+      <div class="about-grid">
+        <div>
+          <p class="eyebrow rv"><b>01</b> &nbsp;About</p>
+          <h2 class="name rv d1">Moses</h2>
+          <div class="about-copy">
+            <p class="bl">Hello, I'm Moses — a full-stack developer who believes great software starts with a strong foundation: clean architecture, thoughtful design, and code that stands the test of time.</p>
+            <p class="bl">I build modern web applications with TypeScript, React, and Node.js. My flagship project, <strong>Milestone</strong>, is a student portfolio platform serving schools, students, and parents with role-based dashboards and growth analytics.</p>
+            <p class="bl">I turn clean architecture, expressive interfaces, and fast product loops into web systems that feel considered from first scroll to final deploy.</p>
+          </div>
+        </div>
+        <div>
+          <div class="photo corners">
+            <div class="shot"><img src="assets/avatar.jpg" alt="Moses, profile illustration"></div>
+          </div>
+          <div class="note rv d2">
+            <p>
+              <span class="typed">A digital mind fit for</span>
+              <span class="typed t2">the perfect mechanical body.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="pillars">
+        <div class="pillar rv"><span class="rule"></span><span class="no">01</span><h3>Clean Code</h3><p>TypeScript-first, strict typing, modular architecture.</p></div>
+        <div class="pillar rv d1"><span class="rule"></span><span class="no">02</span><h3>Full-Stack</h3><p>React, Next.js, Supabase, PostgreSQL, Tailwind.</p></div>
+        <div class="pillar rv d2"><span class="rule"></span><span class="no">03</span><h3>Fast Delivery</h3><p>From concept to deployed product, efficiently.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════ STACK MARQUEE ═════════ -->
+  <div class="marquee" aria-label="Tools and technologies">
+    <span class="mq-label">Selected stack</span>
+    <div class="mq-track">
+      <span class="mq-item v0 c0">React</span><span class="mq-item v1 c1">Next.js</span><span class="mq-item v2 c2">TypeScript</span><span class="mq-item v3 c3">Node.js</span><span class="mq-item v0 c4">Supabase</span><span class="mq-item v1 c0">PostgreSQL</span><span class="mq-item v2 c1">TailwindCSS</span><span class="mq-item v3 c2">Framer Motion</span><span class="mq-item v0 c3">Vite</span><span class="mq-item v1 c4">Docker</span><span class="mq-item v2 c0">Vercel</span><span class="mq-item v3 c1">Bun</span><span class="mq-item v0 c2">Git</span><span class="mq-item v1 c3">RLS</span><span class="mq-item v2 c4">React</span><span class="mq-item v3 c0">Next.js</span><span class="mq-item v0 c1">TypeScript</span><span class="mq-item v1 c2">Node.js</span><span class="mq-item v2 c3">Supabase</span><span class="mq-item v3 c4">PostgreSQL</span><span class="mq-item v0 c0">TailwindCSS</span><span class="mq-item v1 c1">Framer Motion</span><span class="mq-item v2 c2">Vite</span><span class="mq-item v3 c3">Docker</span><span class="mq-item v0 c4">Vercel</span><span class="mq-item v1 c0">Bun</span><span class="mq-item v2 c1">Git</span><span class="mq-item v3 c2">RLS</span>
+    </div>
+  </div>
+
+  <!-- ═════════ WORKS ═════════ -->
+  <section id="works" class="works">
+    <div class="wrap">
+      <div class="works-head">
+        <div class="eyebrow"><span>Proof in motion</span><span>Selected work</span></div>
+        <h2 class="works-title">WORKS<sup>03</sup></h2>
+      </div>
+
+      <div class="works-grid">
+        <!-- Milestone -->
+        <article class="work">
+          <div class="frame-wrap">
+            <div class="frame">
+              <div class="inner browser">
+                <div class="bar"><i></i><i></i><i></i><p>growth-forge-ai-44.vercel.app</p></div>
+                <img src="assets/milestone.jpg" alt="Milestone repository preview">
+              </div>
+              <div class="px" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            </div>
+          </div>
+          <div class="meta">
+            <div>
+              <h3>Milestone</h3>
+              <p class="sub">Student portfolio platform</p>
+              <p class="by">01 / 03 — FEATURED</p>
+              <p class="desc">A production-minded platform for students, teachers, parents, and admins. It combines role-based dashboards, scholarship tracking, achievement records, and growth analytics.</p>
+              <div class="tags"><span>Next.js</span><span>TypeScript</span><span>Supabase</span><span>PostgreSQL</span></div>
+            </div>
+            <div class="chips">
+              <a class="chip" href="https://growth-forge-ai-44.vercel.app" target="_blank" rel="noopener noreferrer">Live</a>
+              <a class="chip" href="https://github.com/MOSES-LEO-tech/growth-forge-ai-44" target="_blank" rel="noopener noreferrer">Source</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Keyboard v2 -->
+        <article class="work">
+          <div class="frame-wrap">
+            <div class="frame">
+              <div class="inner kbscene blue">
+                <div class="readout">hello, moses<i></i></div>
+                <div class="keys"><span class="key" style="animation-delay: 0.0s"></span><span class="key" style="animation-delay: -3.7s"></span><span class="key" style="animation-delay: -2.4s"></span><span class="key" style="animation-delay: -1.1s"></span><span class="key" style="animation-delay: -4.8s"></span><span class="key" style="animation-delay: -3.5s"></span><span class="key" style="animation-delay: -2.2s"></span><span class="key" style="animation-delay: -0.9s"></span><span class="key" style="animation-delay: -4.6s"></span><span class="key" style="animation-delay: -3.3s"></span><span class="key" style="animation-delay: -2.0s"></span><span class="key" style="animation-delay: -0.7s"></span><span class="key" style="animation-delay: -4.4s"></span><span class="key" style="animation-delay: -3.1s"></span><span class="key" style="animation-delay: -1.8s"></span><span class="key" style="animation-delay: -0.5s"></span><span class="key" style="animation-delay: -4.2s"></span><span class="key" style="animation-delay: -2.9s"></span><span class="key" style="animation-delay: -1.6s"></span><span class="key" style="animation-delay: -0.3s"></span><span class="key" style="animation-delay: -4.0s"></span><span class="key" style="animation-delay: -2.7s"></span><span class="key" style="animation-delay: -1.4s"></span><span class="key" style="animation-delay: -0.1s"></span><span class="key" style="animation-delay: -3.8s"></span><span class="key" style="animation-delay: -2.5s"></span><span class="key" style="animation-delay: -1.2s"></span><span class="key" style="animation-delay: -4.9s"></span><span class="key" style="animation-delay: -3.6s"></span><span class="key" style="animation-delay: -2.3s"></span><span class="key" style="animation-delay: -1.0s"></span><span class="key" style="animation-delay: -4.7s"></span><span class="key" style="animation-delay: -3.4s"></span><span class="key" style="animation-delay: -2.1s"></span><span class="key" style="animation-delay: -0.8s"></span><span class="key" style="animation-delay: -4.5s"></span></div>
+                <div class="space"></div>
+              </div>
+              <div class="px" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            </div>
+          </div>
+          <div class="meta">
+            <div>
+              <h3>Keyboard v2</h3>
+              <p class="sub">Interactive input surface</p>
+              <p class="by">02 / 03</p>
+              <p class="desc">A focused browser interface that turns simple key interactions into a polished responsive tool, with Docker support for repeatable deployment.</p>
+              <div class="tags"><span>JavaScript</span><span>CSS</span><span>Docker</span></div>
+            </div>
+            <div class="chips">
+              <a class="chip" href="https://github.com/MOSES-LEO-tech/keyboard-2" target="_blank" rel="noopener noreferrer">Source</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Keyboard -->
+        <article class="work">
+          <div class="frame-wrap">
+            <div class="frame">
+              <div class="inner kbscene amber">
+                <div class="readout">on-screen input<i></i></div>
+                <div class="keys"><span class="key" style="animation-delay: 0.0s"></span><span class="key" style="animation-delay: -3.7s"></span><span class="key" style="animation-delay: -2.4s"></span><span class="key" style="animation-delay: -1.1s"></span><span class="key" style="animation-delay: -4.8s"></span><span class="key" style="animation-delay: -3.5s"></span><span class="key" style="animation-delay: -2.2s"></span><span class="key" style="animation-delay: -0.9s"></span><span class="key" style="animation-delay: -4.6s"></span><span class="key" style="animation-delay: -3.3s"></span><span class="key" style="animation-delay: -2.0s"></span><span class="key" style="animation-delay: -0.7s"></span><span class="key" style="animation-delay: -4.4s"></span><span class="key" style="animation-delay: -3.1s"></span><span class="key" style="animation-delay: -1.8s"></span><span class="key" style="animation-delay: -0.5s"></span><span class="key" style="animation-delay: -4.2s"></span><span class="key" style="animation-delay: -2.9s"></span><span class="key" style="animation-delay: -1.6s"></span><span class="key" style="animation-delay: -0.3s"></span><span class="key" style="animation-delay: -4.0s"></span><span class="key" style="animation-delay: -2.7s"></span><span class="key" style="animation-delay: -1.4s"></span><span class="key" style="animation-delay: -0.1s"></span><span class="key" style="animation-delay: -3.8s"></span><span class="key" style="animation-delay: -2.5s"></span><span class="key" style="animation-delay: -1.2s"></span><span class="key" style="animation-delay: -4.9s"></span><span class="key" style="animation-delay: -3.6s"></span><span class="key" style="animation-delay: -2.3s"></span><span class="key" style="animation-delay: -1.0s"></span><span class="key" style="animation-delay: -4.7s"></span><span class="key" style="animation-delay: -3.4s"></span><span class="key" style="animation-delay: -2.1s"></span><span class="key" style="animation-delay: -0.8s"></span><span class="key" style="animation-delay: -4.5s"></span></div>
+                <div class="space"></div>
+              </div>
+              <div class="px" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            </div>
+          </div>
+          <div class="meta">
+            <div>
+              <h3>Keyboard</h3>
+              <p class="sub">Foundational UI experiment</p>
+              <p class="by">03 / 03</p>
+              <p class="desc">An earlier on-screen keyboard exploring DOM-driven input handling, layout discipline, and clean browser interaction patterns.</p>
+              <div class="tags"><span>JavaScript</span><span>CSS</span></div>
+            </div>
+            <div class="chips">
+              <a class="chip" href="https://github.com/MOSES-LEO-tech/Keyboard" target="_blank" rel="noopener noreferrer">Source</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- More -->
+        <article class="work more">
+          <a class="frame-wrap" href="https://github.com/MOSES-LEO-tech" target="_blank" rel="noopener noreferrer" aria-label="See more projects on GitHub">
+            <div class="box">
+              <span class="eyebrow">Next up</span>
+              <h3>More on<br>GitHub</h3>
+              <svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+            </div>
+          </a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════ FEATURED CASE ═════════ -->
+  <section id="case" class="case">
+    <div class="wrap case-grid">
+      <div class="case-side">
+        <p class="eyebrow rv"><b>Featured</b> &nbsp;Case</p>
+        <h2 class="rv d1">Milestone</h2>
+        <p class="lede rv d2">One record, four points of view. Students build portfolios and track scholarships, teachers verify work, parents monitor progress, and admins oversee the ecosystem.</p>
+        <div class="acc">
+          <details open>
+            <summary>Who it serves</summary>
+            <p>Schools, students, and parents. Each role gets its own dashboard so the same achievements and growth data read the right way for the person looking at them.</p>
+          </details>
+          <details>
+            <summary>How it's built</summary>
+            <p>A Next.js and TypeScript interface on Supabase and PostgreSQL, styled with TailwindCSS. Role-based access keeps each dashboard scoped to the people it belongs to.</p>
+          </details>
+          <details>
+            <summary>What it tracks</summary>
+            <p>Scholarships, achievement records, teacher-verified work, and growth analytics across the whole ecosystem.</p>
+          </details>
+        </div>
+        <div class="case-actions">
+          <a class="chip" href="https://growth-forge-ai-44.vercel.app" target="_blank" rel="noopener noreferrer">Visit live</a>
+          <a class="chip" href="https://github.com/MOSES-LEO-tech/growth-forge-ai-44" target="_blank" rel="noopener noreferrer">Source</a>
+        </div>
+      </div>
+
+      <div class="case-stack">
+        <div class="rv">
+          <div class="cs-frame corners">
+            <div class="browser" style="position:relative;aspect-ratio:2/1">
+              <div class="bar"><i></i><i></i><i></i><p>growth-forge-ai-44.vercel.app</p></div>
+              <img src="assets/milestone.jpg" alt="Milestone repository preview">
+            </div>
+          </div>
+          <div class="cs-label"><span>01 / The project</span><span>Milestone</span></div>
+        </div>
+
+        <div class="rv">
+          <div class="cs-frame corners">
+            <div class="roles">
+              <div class="role"><div><h4>Student</h4><small>Portfolio · scholarships</small></div><div class="bars" style="--c:#1f7a5c"><i></i><i></i><i></i><i></i><i></i></div></div>
+              <div class="role"><div><h4>Teacher</h4><small>Verifies work</small></div><div class="bars" style="--c:#3157d8"><i></i><i></i><i></i><i></i><i></i></div></div>
+              <div class="role"><div><h4>Parent</h4><small>Monitors progress</small></div><div class="bars" style="--c:#c76f2a"><i></i><i></i><i></i><i></i><i></i></div></div>
+              <div class="role"><div><h4>Admin</h4><small>Oversees the ecosystem</small></div><div class="bars" style="--c:#101211"><i></i><i></i><i></i><i></i><i></i></div></div>
+            </div>
+          </div>
+          <div class="cs-label"><span>02 / Role-based dashboards</span><span>Structure</span></div>
+        </div>
+
+        <div class="rv">
+          <div class="cs-frame corners">
+            <div class="flow">
+              <span class="dot"></span>
+              <div><b>Student</b><span>builds the portfolio</span></div>
+              <div><b>Teacher</b><span>verifies the work</span></div>
+              <div><b>Parent</b><span>monitors progress</span></div>
+              <div><b>Admin</b><span>oversees it all</span></div>
+            </div>
+          </div>
+          <div class="cs-label"><span>03 / From achievement to insight</span><span>Flow</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════ FOCUS ═════════ -->
+  <section id="focus" class="focus">
+    <div class="stage">
+      <p class="focus-label">What I can help with</p>
+
+      <div class="art l a1" aria-hidden="true"><span class="dots"></span><span class="blk"></span><span class="ln"></span><span class="ln s"></span><span class="tiles"><i></i><i></i><i></i><i></i></span></div>
+      <div class="art r a1" aria-hidden="true"><span class="dots"></span><span class="tiles"><i></i><i></i><i></i><i></i></span><span class="ln"></span><span class="ln s"></span></div>
+
+      <div class="art l a2" aria-hidden="true"><span class="dots"></span><span class="ln"></span><span class="tiles"><i></i><i></i><i></i><i></i></span><span class="blk"></span></div>
+      <div class="art r a2" aria-hidden="true"><span class="dots"></span><span class="blk"></span><span class="ln s"></span><span class="ln"></span><span class="tiles"><i></i><i></i><i></i><i></i></span></div>
+
+      <div class="art l a3" aria-hidden="true"><span class="dots"></span><span class="blk"></span><span class="tiles"><i></i><i></i><i></i><i></i></span><span class="ln s"></span></div>
+      <div class="art r a3" aria-hidden="true"><span class="dots"></span><span class="ln"></span><span class="ln s"></span><span class="blk"></span><span class="tiles"><i></i><i></i><i></i><i></i></span></div>
+
+      <div class="art l a4" aria-hidden="true"><span class="dots"></span><span class="tiles"><i></i><i></i><i></i><i></i></span><span class="blk"></span><span class="ln"></span></div>
+      <div class="art r a4" aria-hidden="true"><span class="dots"></span><span class="blk"></span><span class="ln"></span><span class="tiles"><i></i><i></i><i></i><i></i></span></div>
+
+      <div class="art l a5" aria-hidden="true"><span class="dots"></span><span class="ln s"></span><span class="blk"></span><span class="ln"></span><span class="tiles"><i></i><i></i><i></i><i></i></span></div>
+      <div class="art r a5" aria-hidden="true"><span class="dots"></span><span class="tiles"><i></i><i></i><i></i><i></i></span><span class="blk"></span><span class="ln s"></span></div>
+    </div>
+
+    <div class="list">
+      <div class="svc"><h3>Full-Stack Web Apps</h3></div>
+      <div class="svc"><h3>Role-Based Dashboards</h3></div>
+      <div class="svc"><h3>Supabase Backends</h3></div>
+      <div class="svc"><h3>Animated Interfaces</h3></div>
+      <div class="svc"><h3>Launch &amp; Deploy</h3></div>
+    </div>
+  </section>
+
+  <!-- ═════════ PROCESS ═════════ -->
+  <section id="process" class="process">
+    <div class="wrap process-grid">
+      <div class="side">
+        <p class="eyebrow rv"><b>Operating model</b></p>
+        <h2 class="rv d1">From idea to deployed system, with fewer loose ends.</h2>
+        <p class="lede rv d2">The process is laid out like a production line. Each step has its own reveal, and the rail fills as you move through it.</p>
+      </div>
+      <div class="rail">
+        <span class="rail-fill" aria-hidden="true"></span>
+        <div class="step"><span class="n">01</span><h3>Frame</h3><p>Define the user, the promise, and the smallest useful path.</p></div>
+        <div class="step"><span class="n">02</span><h3>Model</h3><p>Shape data, permissions, and the product boundaries before screens multiply.</p></div>
+        <div class="step"><span class="n">03</span><h3>Build</h3><p>Ship typed React interfaces with clear states, loading paths, and errors.</p></div>
+        <div class="step"><span class="n">04</span><h3>Connect</h3><p>Wire Supabase, APIs, auth, and deployment into one working loop.</p></div>
+        <div class="step"><span class="n">05</span><h3>Polish</h3><p>Tune layout, motion, copy, and accessibility until the flow feels intentional.</p></div>
+        <div class="step"><span class="n">06</span><h3>Launch</h3><p>Deploy, inspect, and keep improving from real usage instead of guesses.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════ STACK ═════════ -->
+  <section class="stack">
+    <div class="wrap">
+      <p class="eyebrow rv"><b>Tooling</b></p>
+      <h2 class="rv d1">The stack supports the story.</h2>
+      <div class="stack-grid">
+        <div class="panel rv">
+          <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 18 6-6-6-6"/><path d="m8 6-6 6 6 6"/></svg></span>
+          <h3>Interface</h3>
+          <div class="pl"><span>React</span><span>Next.js</span><span>Vite</span><span>TailwindCSS</span><span>Framer Motion</span></div>
+        </div>
+        <div class="panel rv d1">
+          <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg></span>
+          <h3>System</h3>
+          <div class="pl"><span>TypeScript</span><span>Node.js</span><span>Supabase</span><span>PostgreSQL</span><span>RLS</span></div>
+        </div>
+        <div class="panel rv d2">
+          <span class="ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
+          <h3>Delivery</h3>
+          <div class="pl"><span>Git</span><span>Docker</span><span>Vercel</span><span>Bun</span><span>CI checks</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════ CONTACT ═════════ -->
+  <section id="contact" class="contact">
+    <div class="rail-links">
+      <a href="https://github.com/MOSES-LEO-tech" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg></a>
+      <a href="mailto:momolilitech@gmail.com" aria-label="Email"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></a>
+    </div>
+    <div class="wrap contact-grid">
+      <div class="env-wrap" aria-hidden="true">
+        <span class="env-glow"></span>
+        <div class="env">
+          <div class="back"></div>
+          <div class="flap"></div>
+          <div class="letter"><h4>Hello.</h4><p>momolilitech@gmail.com</p><span class="sig"></span></div>
+          <div class="front"></div>
+        </div>
+      </div>
+      <div>
+        <p class="eyebrow rv"><b>Build with MOMOLILI</b></p>
+        <h2 class="rv d1">Let the next thing feel inevitable.</h2>
+        <p class="lede rv d2">Have a project, collaboration, or idea that needs a polished web system? Start with the work, then make the experience memorable.</p>
+        <div class="metrics rv d2"><span>Fast iterations</span><span>Clean foundations</span><span>Launch-ready</span><span>Motion-first polish</span></div>
+        <div class="hero-actions" style="justify-content:flex-start;margin-top:0;animation:none">
+          <a class="btn primary" href="mailto:momolilitech@gmail.com">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            Email me
+          </a>
+          <a class="btn ghost" href="https://github.com/MOSES-LEO-tech" target="_blank" rel="noopener noreferrer">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+            GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <p>© 2026 MOMOLILI TECH. Build without limits.</p>
+      <div>
+        <a href="#home">Top</a>
+        <a href="mailto:momolilitech@gmail.com">Email</a>
+        <a href="https://github.com/MOSES-LEO-tech" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+</body>
 </html>
